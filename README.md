@@ -33,7 +33,7 @@
 1. Run PowerShell as **Administrator**
 2. Execute the script:
    ```powershell
-   .# Safe-PC-Installer-v3-ULTIMATE.ps1
+   # Safe-PC-Installer-v3-ULTIMATE.ps1
 # 🚀 Future-Proof Edition - 1000 Years Ready!
 # Version: 3.0 - Ultimate Feature Set
 # Last Updated: September 2025
@@ -596,3 +596,9 @@ do {
         }
     }
 } while ($true)
+# 🚀 Future-Proof Edition - 1000 Years Ready!
+# Version: 3.0 - Ultimate Feature Set
+# Last Updated: September 2025
+
+#Requires -RunAsAdministrator
+
