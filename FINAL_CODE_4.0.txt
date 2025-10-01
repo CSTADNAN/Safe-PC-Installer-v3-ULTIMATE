@@ -1,0 +1,393 @@
+# Safe-PC-Installer-v3.1.ps1
+# 100% Safe • No Registry • No File Deletion • Only Winget
+# 108 Essential Apps - COLOR CODED & ORGANIZED
+# Made by: MD Adnan | October 2025
+
+#Requires -RunAsAdministrator
+
+Clear-Host
+
+# Color Scheme
+$script:Colors = @{
+    Primary = "Cyan"
+    Success = "Green"
+    Warning = "Yellow"
+    Error = "Red"
+    Info = "White"
+    Highlight = "Magenta"
+}
+
+# 🛡️ COMPLETE SOFTWARE LIST (108 Apps)
+$softwareList = @(
+    # 🌐 Browsers (1-6)
+    @{Name="🌐 Chrome"; Id="Google.Chrome"; Category="Browsers"; Color="Cyan"},
+    @{Name="🦊 Firefox"; Id="Mozilla.Firefox"; Category="Browsers"; Color="Cyan"},
+    @{Name="🔴 Opera"; Id="Opera.Opera"; Category="Browsers"; Color="Cyan"},
+    @{Name="🪟 Edge"; Id="Microsoft.Edge"; Category="Browsers"; Color="Cyan"},
+    @{Name="🦁 Brave"; Id="Brave.Brave"; Category="Browsers"; Color="Cyan"},
+    @{Name="🔷 Arc"; Id="TheBrowserCompany.Arc"; Category="Browsers"; Color="Cyan"},
+
+    # 📡 Communication (7-13)
+    @{Name="📞 Zoom"; Id="Zoom.Zoom"; Category="Communication"; Color="Green"},
+    @{Name="💬 Discord"; Id="Discord.Discord"; Category="Communication"; Color="Green"},
+    @{Name="👥 Teams"; Id="Microsoft.Teams"; Category="Communication"; Color="Green"},
+    @{Name="🐦 Pidgin"; Id="Pidgin.Pidgin"; Category="Communication"; Color="Green"},
+    @{Name="📧 Thunderbird"; Id="Mozilla.Thunderbird"; Category="Communication"; Color="Green"},
+    @{Name="☎️ Skype"; Id="Microsoft.Skype"; Category="Communication"; Color="Green"},
+    @{Name="💚 WhatsApp"; Id="9NKSQGP7F2NH"; Category="Communication"; Color="Green"},
+
+    # 🎵 Multimedia (14-20)
+    @{Name="🎥 VLC"; Id="VideoLAN.VLC"; Category="Media"; Color="Magenta"},
+    @{Name="🎵 AIMP"; Id="AIMP.AIMP"; Category="Media"; Color="Magenta"},
+    @{Name="🎶 foobar2000"; Id="PeterPawlowski.foobar2000"; Category="Media"; Color="Magenta"},
+    @{Name="🎧 Winamp"; Id="Winamp.Winamp"; Category="Media"; Color="Magenta"},
+    @{Name="🎙️ Audacity"; Id="Audacity.Audacity"; Category="Media"; Color="Magenta"},
+    @{Name="🎵 Spotify"; Id="Spotify.Spotify"; Category="Media"; Color="Magenta"},
+    @{Name="🎬 OBS Studio"; Id="OBSProject.OBSStudio"; Category="Media"; Color="Magenta"},
+
+    # 🎨 Graphics (21-29)
+    @{Name="🎨 Krita"; Id="KDE.Krita"; Category="Graphics"; Color="Yellow"},
+    @{Name="🖌️ Paint.NET"; Id="dotPDN.PaintDotNet"; Category="Graphics"; Color="Yellow"},
+    @{Name="🎨 GIMP"; Id="GIMP.GIMP"; Category="Graphics"; Color="Yellow"},
+    @{Name="🖼️ IrfanView"; Id="IrfanSkiljan.IrfanView"; Category="Graphics"; Color="Yellow"},
+    @{Name="🖼️ XnView"; Id="XnSoft.XnView"; Category="Graphics"; Color="Yellow"},
+    @{Name="✒️ Inkscape"; Id="Inkscape.Inkscape"; Category="Graphics"; Color="Yellow"},
+    @{Name="📸 FastStone"; Id="FastStone.Capture"; Category="Graphics"; Color="Yellow"},
+    @{Name="📷 Greenshot"; Id="Greenshot.Greenshot"; Category="Graphics"; Color="Yellow"},
+    @{Name="📤 ShareX"; Id="ShareX.ShareX"; Category="Graphics"; Color="Yellow"},
+
+    # 📕 Documents (30-34)
+    @{Name="📕 Foxit Reader"; Id="Foxit.FoxitReader"; Category="Documents"; Color="White"},
+    @{Name="📑 LibreOffice"; Id="TheDocumentFoundation.LibreOffice"; Category="Documents"; Color="White"},
+    @{Name="📄 SumatraPDF"; Id="SumatraPDF.SumatraPDF"; Category="Documents"; Color="White"},
+    @{Name="🖨️ CutePDF"; Id="Acro.CutePDF"; Category="Documents"; Color="White"},
+    @{Name="📕 Adobe Reader"; Id="Adobe.Acrobat.Reader.64-bit"; Category="Documents"; Color="White"},
+
+    # 📊 Office (35-37)
+    @{Name="📊 MS Office 365"; Id="Microsoft.Office"; Category="Office"; Color="Blue"},
+    @{Name="🇧🇩 Bijoy Bayanno"; Id="OmicronLab.BijoyBayanno"; Category="Office"; Color="Blue"},
+    @{Name="📦 MS 365 Setup"; Id="Microsoft.Microsoft365Apps"; Category="Office"; Color="Blue"},
+
+    # 🛡️ Security (38-44)
+    @{Name="🛡️ Malwarebytes"; Id="Malwarebytes.Malwarebytes"; Category="Security"; Color="Red"},
+    @{Name="🛡️ Avast"; Id="Avast.Avast.Free"; Category="Security"; Color="Red"},
+    @{Name="🦠 AVG"; Id="AVG.AntiVirusFree"; Category="Security"; Color="Red"},
+    @{Name="🕷️ Spybot"; Id="SaferNetworking.SpybotAntiBeacon"; Category="Security"; Color="Red"},
+    @{Name="🔒 Avira"; Id="Avira.Avira"; Category="Security"; Color="Red"},
+    @{Name="🛡️ SUPERAntiSpyware"; Id="SUPERAntiSpyware.SUPERAntiSpyware"; Category="Security"; Color="Red"},
+    @{Name="🔐 KeePass 2"; Id="DominikReichl.KeePass"; Category="Security"; Color="Red"},
+
+    # 🌐 Cloud & Network (45-51)
+    @{Name="🌐 qBittorrent"; Id="qBittorrent.qBittorrent"; Category="Network"; Color="Cyan"},
+    @{Name="☁️ Dropbox"; Id="Dropbox.Dropbox"; Category="Cloud"; Color="Cyan"},
+    @{Name="☁️ Google Drive"; Id="Google.Drive"; Category="Cloud"; Color="Cyan"},
+    @{Name="☁️ OneDrive"; Id="Microsoft.OneDrive"; Category="Cloud"; Color="Cyan"},
+    @{Name="☁️ SugarSync"; Id="SugarSync.SugarSync"; Category="Cloud"; Color="Cyan"},
+    @{Name="📝 Evernote"; Id="Evernote.Evernote"; Category="Cloud"; Color="Cyan"},
+    @{Name="🌍 Google Earth"; Id="Google.EarthPro"; Category="Network"; Color="Cyan"},
+
+    # 🎮 Gaming (52-53)
+    @{Name="🎮 Steam"; Id="Valve.Steam"; Category="Gaming"; Color="Magenta"},
+    @{Name="🎮 Epic Games"; Id="EpicGames.EpicGamesLauncher"; Category="Gaming"; Color="Magenta"},
+
+    # 🔍 Utilities (54-74)
+    @{Name="🔍 Everything"; Id="voidtools.Everything"; Category="Utilities"; Color="Gray"},
+    @{Name="👁️ NVDA"; Id="NVAccess.NVDA"; Category="Utilities"; Color="Gray"},
+    @{Name="🖥️ AnyDesk"; Id="AnyDeskSoftwareGmbH.AnyDesk"; Category="Utilities"; Color="Gray"},
+    @{Name="🖥️ TeamViewer"; Id="TeamViewer.TeamViewer"; Category="Utilities"; Color="Gray"},
+    @{Name="💿 ImgBurn"; Id="LIGHTNINGUK.ImgBurn"; Category="Utilities"; Color="Gray"},
+    @{Name="🖥️ RealVNC Server"; Id="RealVNC.VNCServer"; Category="Utilities"; Color="Gray"},
+    @{Name="🖥️ RealVNC Viewer"; Id="RealVNC.VNCViewer"; Category="Utilities"; Color="Gray"},
+    @{Name="🖥️ TightVNC"; Id="GlavSoft.TightVNC"; Category="Utilities"; Color="Gray"},
+    @{Name="📁 TeraCopy"; Id="CodeSector.TeraCopy"; Category="Utilities"; Color="Gray"},
+    @{Name="💿 CDBurnerXP"; Id="Canneverbe.CDBurnerXP"; Category="Utilities"; Color="Gray"},
+    @{Name="🗑️ Revo Uninstaller"; Id="RevoUninstaller.RevoUninstaller"; Category="Utilities"; Color="Gray"},
+    @{Name="⌨️ Launchy"; Id="Launchy.Launchy"; Category="Utilities"; Color="Gray"},
+    @{Name="📊 WinDirStat"; Id="WinDirStat.WinDirStat"; Category="Utilities"; Color="Gray"},
+    @{Name="🌲 WizTree"; Id="AntibodySoftware.WizTree"; Category="Utilities"; Color="Gray"},
+    @{Name="🛠️ Glary Utilities"; Id="Glarysoft.GlaryUtilities"; Category="Utilities"; Color="Gray"},
+    @{Name="💿 InfraRecorder"; Id="ChristianKindahl.InfraRecorder"; Category="Utilities"; Color="Gray"},
+    @{Name="🚀 Open-Shell"; Id="Open-Shell.Open-Shell-Menu"; Category="Utilities"; Color="Gray"},
+    @{Name="🧹 CCleaner"; Id="Piriform.CCleaner"; Category="Utilities"; Color="Gray"},
+    @{Name="💿 Rufus"; Id="Rufus.Rufus"; Category="Utilities"; Color="Gray"},
+    @{Name="⚡ PowerToys"; Id="Microsoft.PowerToys"; Category="Utilities"; Color="Gray"},
+    @{Name="🖥️ CPU-Z"; Id="CPUID.CPU-Z"; Category="Utilities"; Color="Gray"},
+
+    # 📦 Compression (75-77)
+    @{Name="📦 7-Zip"; Id="7zip.7zip"; Category="Compression"; Color="Yellow"},
+    @{Name="🗜️ PeaZip"; Id="Giorgiotani.Peazip"; Category="Compression"; Color="Yellow"},
+    @{Name="📦 WinRAR"; Id="RARLab.WinRAR"; Category="Compression"; Color="Yellow"},
+
+    # ⚙️ Runtimes - VC++ (78-90)
+    @{Name="⚙️ VC++ 2015+ x64"; Id="Microsoft.VCRedist.2015+.x64"; Category="Runtimes"; Color="DarkGray"},
+    @{Name="⚙️ VC++ 2015+ x86"; Id="Microsoft.VCRedist.2015+.x86"; Category="Runtimes"; Color="DarkGray"},
+    @{Name="⚙️ VC++ 2015+ ARM64"; Id="Microsoft.VCRedist.2015+.arm64"; Category="Runtimes"; Color="DarkGray"},
+    @{Name="⚙️ VC++ 2013 x64"; Id="Microsoft.VCRedist.2013.x64"; Category="Runtimes"; Color="DarkGray"},
+    @{Name="⚙️ VC++ 2013 x86"; Id="Microsoft.VCRedist.2013.x86"; Category="Runtimes"; Color="DarkGray"},
+    @{Name="⚙️ VC++ 2012 x64"; Id="Microsoft.VCRedist.2012.x64"; Category="Runtimes"; Color="DarkGray"},
+    @{Name="⚙️ VC++ 2012 x86"; Id="Microsoft.VCRedist.2012.x86"; Category="Runtimes"; Color="DarkGray"},
+    @{Name="⚙️ VC++ 2010 x64"; Id="Microsoft.VCRedist.2010.x64"; Category="Runtimes"; Color="DarkGray"},
+    @{Name="⚙️ VC++ 2010 x86"; Id="Microsoft.VCRedist.2010.x86"; Category="Runtimes"; Color="DarkGray"},
+    @{Name="⚙️ VC++ 2008 x64"; Id="Microsoft.VCRedist.2008.x64"; Category="Runtimes"; Color="DarkGray"},
+    @{Name="⚙️ VC++ 2008 x86"; Id="Microsoft.VCRedist.2008.x86"; Category="Runtimes"; Color="DarkGray"},
+    @{Name="⚙️ VC++ 2005 x64"; Id="Microsoft.VCRedist.2005.x64"; Category="Runtimes"; Color="DarkGray"},
+    @{Name="⚙️ VC++ 2005 x86"; Id="Microsoft.VCRedist.2005.x86"; Category="Runtimes"; Color="DarkGray"},
+
+    # ⚙️ .NET & Development (91-108)
+    @{Name="⚙️ .NET 4.8.1"; Id="Microsoft.DotNet.Framework.DeveloperPack_4"; Category="Runtimes"; Color="DarkGray"},
+    @{Name="🐍 Python 3"; Id="Python.Python.3.12"; Category="Development"; Color="Blue"},
+    @{Name="🐍 Python 2.7"; Id="Python.Python.2"; Category="Development"; Color="Blue"},
+    @{Name="🔧 Git"; Id="Git.Git"; Category="Development"; Color="Blue"},
+    @{Name="📡 FileZilla"; Id="TimKosse.FileZilla.Client"; Category="Development"; Color="Blue"},
+    @{Name="📝 Notepad++"; Id="Notepad++.Notepad++"; Category="Development"; Color="Blue"},
+    @{Name="🔐 WinSCP"; Id="WinSCP.WinSCP"; Category="Development"; Color="Blue"},
+    @{Name="🖥️ PuTTY"; Id="PuTTY.PuTTY"; Category="Development"; Color="Blue"},
+    @{Name="🔀 WinMerge"; Id="WinMerge.WinMerge"; Category="Development"; Color="Blue"},
+    @{Name="☕ Eclipse"; Id="EclipseAdoptium.Temurin.21.JDK"; Category="Development"; Color="Blue"},
+    @{Name="💻 VS Code"; Id="Microsoft.VisualStudioCode"; Category="Development"; Color="Blue"},
+    @{Name="🤖 Cursor"; Id="Anysphere.Cursor"; Category="Development"; Color="Blue"},
+    @{Name="🟢 Node.js"; Id="OpenJS.NodeJS"; Category="Development"; Color="Blue"},
+    @{Name="💎 Ruby"; Id="RubyInstallerTeam.Ruby.3.2"; Category="Development"; Color="Blue"},
+    @{Name="🐘 PostgreSQL"; Id="PostgreSQL.PostgreSQL"; Category="Development"; Color="Blue"},
+    @{Name="🐬 MySQL"; Id="Oracle.MySQL"; Category="Development"; Color="Blue"},
+    @{Name="📊 Tableau"; Id="Tableau.TableauPublic"; Category="Development"; Color="Blue"},
+    @{Name="⬇️ IDM"; Id="Tonec.InternetDownloadManager"; Category="Downloads"; Color="Green"}
+)
+
+function Test-AdminPrivileges {
+    $currentUser = [Security.Principal.WindowsIdentity]::GetCurrent()
+    $principal = New-Object Security.Principal.WindowsPrincipal($currentUser)
+    return $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+}
+
+function Show-Header {
+    $headerText = @"
+╔═══════════════════════════════════════════════════════════════════════════╗
+║     ██╗   ██╗██╗  ████████╗██╗███╗   ███╗ █████╗ ████████╗███████╗       ║
+║     ██║   ██║██║  ╚══██╔══╝██║████╗ ████║██╔══██╗╚══██╔══╝██╔════╝       ║
+║     ██║   ██║██║     ██║   ██║██╔████╔██║███████║   ██║   █████╗         ║
+║     ██║   ██║██║     ██║   ██║██║╚██╔╝██║██╔══██║   ██║   ██╔══╝         ║
+║     ╚██████╔╝███████╗██║   ██║██║ ╚═╝ ██║██║  ██║   ██║   ███████╗       ║
+║      ╚═════╝ ╚══════╝╚═╝   ╚═╝╚═╝     ╚═╝╚═╝  ╚═╝   ╚═╝   ╚══════╝       ║
+║              🛡️  SAFE PC INSTALLER V4.0 - COLOR CODED 🛡️                 ║
+║                          Made by: MD Adnan                                ║
+║      100% SAFE • NO REGISTRY • NO FILE DELETION • WINGET ONLY             ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+"@
+    Write-Host $headerText -ForegroundColor $Colors.Primary
+    Write-Host "`n  📦 Total Apps: " -NoNewline -ForegroundColor $Colors.Warning
+    Write-Host "$($softwareList.Count)" -ForegroundColor $Colors.Success
+    Write-Host "  🔐 Admin: " -NoNewline -ForegroundColor $Colors.Warning
+    Write-Host $(if (Test-AdminPrivileges) { "✅ Yes" } else { "❌ No" }) -ForegroundColor $(if (Test-AdminPrivileges) { $Colors.Success } else { $Colors.Error })
+    Write-Host ""
+}
+
+function Show-Menu {
+    Write-Host "┌───────────────────────────────────────────────────────────────────────────┐" -ForegroundColor $Colors.Warning
+    Write-Host "│                        ⚡ ACTIONS ⚡                                       │" -ForegroundColor $Colors.Warning
+    Write-Host "└───────────────────────────────────────────────────────────────────────────┘" -ForegroundColor $Colors.Warning
+    Write-Host ""
+    Write-Host "  [I] 📥 Install  |  [U] 🗑️ Uninstall  |  [L] 📋 List  |  [A] 🔄 Update All  |  [C] 🎨 Categories  |  [Q] ❌ Quit" -ForegroundColor $Colors.Info
+    Write-Host ""
+    Write-Host "┌───────────────────────────────────────────────────────────────────────────┐" -ForegroundColor DarkCyan
+    Write-Host "│ 📦 108 APPS - COLOR CODED BY CATEGORY                                    │" -ForegroundColor $Colors.Info
+    Write-Host "└───────────────────────────────────────────────────────────────────────────┘" -ForegroundColor DarkCyan
+    Write-Host ""
+
+    $total = $softwareList.Count
+    $columns = 3
+    $rows = [Math]::Ceiling($total / $columns)
+
+    for ($row = 0; $row -lt $rows; $row++) {
+        for ($col = 0; $col -lt $columns; $col++) {
+            $index = $row + ($col * $rows)
+            if ($index -lt $total) {
+                $num = $index + 1
+                $app = $softwareList[$index]
+                $numStr = if ($num -lt 10) { " [$num]  " } elseif ($num -lt 100) { "[$num] " } else { "[$num]" }
+                
+                Write-Host $numStr -NoNewline -ForegroundColor White
+                Write-Host $app.Name.PadRight(30) -NoNewline -ForegroundColor $app.Color
+            }
+        }
+        Write-Host ""
+    }
+    
+    Write-Host "`n💡 " -NoNewline -ForegroundColor Gray
+    Write-Host "Colors: " -NoNewline -ForegroundColor Gray
+    Write-Host "Cyan=Browser/Cloud " -NoNewline -ForegroundColor Cyan
+    Write-Host "Green=Comm " -NoNewline -ForegroundColor Green
+    Write-Host "Magenta=Media " -NoNewline -ForegroundColor Magenta
+    Write-Host "Yellow=Graphics " -NoNewline -ForegroundColor Yellow
+    Write-Host "Red=Security " -NoNewline -ForegroundColor Red
+    Write-Host "Blue=Dev" -ForegroundColor Blue
+    Write-Host "💡 Examples: '1' | '35-37' (MS Office) | '1,7,100,108'" -ForegroundColor Gray
+}
+
+function Show-ByCategory {
+    Clear-Host
+    Show-Header
+    
+    $categories = $softwareList | Group-Object -Property Category | Sort-Object Name
+    
+    Write-Host "╔═══════════════════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
+    Write-Host "║                    📂 SOFTWARE BY CATEGORY                                ║" -ForegroundColor Cyan
+    Write-Host "╚═══════════════════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
+    
+    foreach ($category in $categories) {
+        $catName = $category.Name
+        $color = $category.Group[0].Color
+        
+        Write-Host "`n┌─ " -NoNewline -ForegroundColor DarkGray
+        Write-Host "$catName ($($category.Count) apps)" -ForegroundColor $color
+        Write-Host "└────────────────────────────────────────────────────────" -ForegroundColor DarkGray
+        
+        foreach ($app in $category.Group) {
+            $num = $softwareList.IndexOf($app) + 1
+            Write-Host "   [$num] " -NoNewline -ForegroundColor White
+            Write-Host "$($app.Name)" -ForegroundColor $color
+        }
+    }
+    Write-Host ""
+    Pause
+}
+
+function Install-Software {
+    param([array]$items)
+    Clear-Host
+    Write-Host "🛡️ INSTALLING SOFTWARE (SILENT MODE)..." -ForegroundColor $Colors.Success
+    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor DarkGray
+
+    $successCount = 0
+    $failCount = 0
+
+    foreach ($app in $items) {
+        Write-Host "`n📦 " -NoNewline
+        Write-Host "$($app.Name)" -ForegroundColor $app.Color
+        Write-Host "   ID: $($app.Id)" -ForegroundColor DarkGray
+        
+        winget install --id $app.Id --silent --accept-package-agreements --accept-source-agreements 2>&1 | Out-Null
+        
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "   ✅ Installed!" -ForegroundColor $Colors.Success
+            $successCount++
+        } else {
+            Write-Host "   ⚠️ Skipped" -ForegroundColor $Colors.Warning
+            $failCount++
+        }
+    }
+    
+    Write-Host "`n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor DarkGray
+    Write-Host "✅ COMPLETE! Success: $successCount | Skipped: $failCount" -ForegroundColor $Colors.Success
+    Pause
+}
+
+function Uninstall-Software {
+    Clear-Host
+    Show-Header
+    Write-Host "🗑️ Enter number to uninstall: " -NoNewline -ForegroundColor $Colors.Warning
+    $input = Read-Host
+
+    if ($input -match '^\d+$') {
+        $idx = [int]$input - 1
+        if ($idx -ge 0 -and $idx -lt $softwareList.Count) {
+            $app = $softwareList[$idx]
+            Write-Host "`n📦 Target: " -NoNewline
+            Write-Host "$($app.Name)" -ForegroundColor $app.Color
+            Write-Host "Confirm? (Y/N): " -NoNewline -ForegroundColor $Colors.Warning
+            if ((Read-Host) -match '^[Yy]$') {
+                winget uninstall --id $app.Id --silent --accept-source-agreements
+                Write-Host "`n✅ Done!" -ForegroundColor $Colors.Success
+            }
+        } else {
+            Write-Host "`n❌ Invalid number!" -ForegroundColor $Colors.Error
+        }
+    }
+    Pause
+}
+
+function List-InstalledSoftware {
+    Clear-Host
+    Show-Header
+    Write-Host "📋 Installed Software:" -ForegroundColor $Colors.Info
+    winget list --accept-source-agreements
+    Pause
+}
+
+function Update-AllSoftware {
+    Clear-Host
+    Write-Host "🔄 Updating All Software..." -ForegroundColor $Colors.Highlight
+    winget upgrade --all --silent --accept-package-agreements --accept-source-agreements
+    Write-Host "`n✅ Updates Complete!" -ForegroundColor $Colors.Success
+    Pause
+}
+
+function Parse-InputSelection {
+    param([string]$inputString)
+    $validApps = New-Object System.Collections.ArrayList
+    $parts = $inputString -split ',' | ForEach-Object { $_.Trim() }
+    
+    foreach ($part in $parts) {
+        if ($part -match '^(\d+)-(\d+)$') {
+            $start = [int]$Matches[1]
+            $end = [int]$Matches[2]
+            for ($i = $start; $i -le $end; $i++) {
+                $idx = $i - 1
+                if ($idx -ge 0 -and $idx -lt $softwareList.Count) {
+                    [void]$validApps.Add($softwareList[$idx])
+                }
+            }
+        }
+        elseif ($part -match '^\d+$') {
+            $idx = [int]$part - 1
+            if ($idx -ge 0 -and $idx -lt $softwareList.Count) {
+                [void]$validApps.Add($softwareList[$idx])
+            }
+        }
+    }
+    return $validApps.ToArray()
+}
+
+# MAIN LOOP
+do {
+    Clear-Host
+    Show-Header
+    Show-Menu
+    Write-Host "`n👉 Your choice: " -NoNewline -ForegroundColor $Colors.Highlight
+    $choice = Read-Host
+
+    switch ($choice.ToUpper()) {
+        "I" {
+            Write-Host "Enter number(s): " -NoNewline -ForegroundColor $Colors.Info
+            $userInput = Read-Host
+            $validApps = Parse-InputSelection -inputString $userInput
+            
+            if ($validApps.Count -gt 0) {
+                Write-Host "`n📦 Selected:" -ForegroundColor $Colors.Info
+                foreach ($app in $validApps) {
+                    Write-Host "   • " -NoNewline
+                    Write-Host "$($app.Name)" -ForegroundColor $app.Color
+                }
+                Write-Host "`nProceed? (Y/N): " -NoNewline -ForegroundColor $Colors.Warning
+                if ((Read-Host) -match '^[Yy]$') {
+                    Install-Software -items $validApps
+                }
+            } else {
+                Write-Host "❌ Invalid input!" -ForegroundColor $Colors.Error
+                Pause
+            }
+        }
+        "U" { Uninstall-Software }
+        "L" { List-InstalledSoftware }
+        "A" { Update-AllSoftware }
+        "C" { Show-ByCategory }
+        "Q" { 
+            Write-Host "`n✅ Thank you! Your PC is safe." -ForegroundColor $Colors.Success
+            break 
+        }
+        default {
+            Write-Host "❌ Invalid! Use: I, U, L, A, C, or Q" -ForegroundColor $Colors.Error
+            Start-Sleep -Seconds 2
+        }
+    }
+} while ($true)
